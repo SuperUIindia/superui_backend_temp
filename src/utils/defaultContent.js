@@ -530,8 +530,8 @@ const DEFAULT_CONTACT = {
     'Fixed upfront quote with zero hidden charges',
     'NDA signed upon request for confidential ideas'
   ],
-  // The contact form renders inside the site modal, not inline. These three
-  // strings are the card that invites the visitor to open that single form.
+  // The inquiry form renders inline in the right-hand card of this section.
+  // These three strings head that form.
   formCardTitle: 'Project Inquiry Form',
   formCardSubtitle:
     'Fill out the parameters below and our engineering team will get back to you with a roadmap.',
@@ -614,12 +614,15 @@ const DEFAULT_CONTACT_FORM = {
   footnote: 'No spam guaranteed. We respond with a tailored proposal in <24 hours.',
   successHeadingPrefix: 'Thank you dear',
   successFallbackName: 'there',
+  // Shown in the popup that confirms a submission, above the reply copy.
+  successTagline: 'We build fast, secure websites that grow your business.',
   successBody:
     'We have received your requirements and we will contact you soon. Our team usually replies within 24 business hours.',
   successFasterReply: 'Want a faster reply?',
   successDmCta: 'Message me on Instagram',
   successFollowCta: 'Follow AKHILTHADAKA on Instagram',
   successSubmitAnother: 'Submit Another Request',
+  successClose: 'Continue',
   errorFallbackEmail: 'hello.superui@gmail.com'
 };
 
