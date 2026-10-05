@@ -17,10 +17,12 @@ const popupSchema = new mongoose.Schema(
       maxlength: 500
     },
 
-    // Header / body / footer copy
+    // Header / body / footer copy. The header is optional so an offer can be a
+    // poster on its own; the visitor-facing popup renders no heading when it is
+    // blank.
     title: {
       type: String,
-      required: [true, 'Header text is required'],
+      default: '',
       trim: true,
       maxlength: 120
     },

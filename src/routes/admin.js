@@ -749,7 +749,8 @@ const popupSchema = z
       .trim()
       .max(500, 'Image URL cannot exceed 500 characters')
       .refine((v) => /^https?:\/\//i.test(v), 'Image URL must start with http:// or https://'),
-    title: z.string().trim().min(1, 'Header text is required').max(120),
+    // Optional: an empty header renders a poster-only offer.
+    title: z.string().trim().max(120).optional().default(''),
     bodyText: z.string().trim().max(1000).optional().default(''),
     footerText: z.string().trim().max(300).optional().default(''),
     ctaLabel: z.string().trim().max(40).optional().default('Contact Us'),
