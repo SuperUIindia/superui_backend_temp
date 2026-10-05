@@ -1,7 +1,7 @@
 {
   "name": "superui-backend",
   "version": "1.0.0",
-  "description": "SuperUI Services API â€” Express 5 + MongoDB backend for lead generation, telemetry and admin analytics",
+  "description": "SuperUI Services API — Express 5 + MongoDB backend for lead generation, telemetry and admin analytics",
   "private": true,
   "type": "commonjs",
   "scripts": {
