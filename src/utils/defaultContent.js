@@ -530,9 +530,12 @@ const DEFAULT_CONTACT = {
     'Fixed upfront quote with zero hidden charges',
     'NDA signed upon request for confidential ideas'
   ],
+  // The contact form renders inside the site modal, not inline. These three
+  // strings are the card that invites the visitor to open that single form.
   formCardTitle: 'Project Inquiry Form',
   formCardSubtitle:
-    'Fill out the parameters below and our engineering team will get back to you with a roadmap.'
+    'Fill out the parameters below and our engineering team will get back to you with a roadmap.',
+  formCardButton: 'Open the contact form'
 };
 
 /**
