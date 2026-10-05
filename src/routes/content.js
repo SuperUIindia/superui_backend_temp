@@ -32,21 +32,26 @@ async function getOrSeedSection(key) {
 router.get('/', async (req, res, next) => {
   try {
     const allKeys = Object.keys(DEFAULT_SECTIONS);
-    const sections = {};
 
-    for (const key of allKeys) {
-      const doc = await getOrSeedSection(key);
-      if (doc) {
-        sections[doc.key] = {
-          key: doc.key,
-          title: doc.title,
-          description: doc.description,
-          data: doc.data,
-          updatedAt: doc.updatedAt,
-          lastUpdatedBy: doc.lastUpdatedBy
-        };
-      }
-    }
+    // Resolve every section concurrently. Awaiting them one at a time made this
+    // route cost twelve serial database round trips, and it is on the critical
+    // path of every public page load, so its latency was roughly the sum of all
+    // twelve instead of the slowest one. It also means a single slow section can
+    // no longer stall the whole response.
+    const docs = await Promise.all(allKeys.map((key) => getOrSeedSection(key)));
+
+    const sections = {};
+    docs.forEach((doc) => {
+      if (!doc) return;
+      sections[doc.key] = {
+        key: doc.key,
+        title: doc.title,
+        description: doc.description,
+        data: doc.data,
+        updatedAt: doc.updatedAt,
+        lastUpdatedBy: doc.lastUpdatedBy
+      };
+    });
 
     return res.status(200).json({
       success: true,
