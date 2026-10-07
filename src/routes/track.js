@@ -27,25 +27,29 @@ const clickSchema = z.object({
  */
 router.post('/visit', trackLimiter, validate(visitSchema), async (req, res, next) => {
   try {
-    const { visitorId, sessionId, path, referrer } = req.body;
-    
-    // Ignore tracking if path is admin route
+    const { visitorId, sessionId, path, referrer, screenWidth } = req.body;
+
     if (path && path.startsWith('/admin')) {
       return res.status(200).json({ success: true, message: 'Admin routes excluded from tracking' });
     }
 
     const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || req.ip;
     const ipHash = hashIp(clientIp);
-    const { device, browser } = parseUserAgent(req.headers['user-agent']);
+    const { deviceCategory, deviceModel, deviceVendor, browser } = parseUserAgent(req.headers['user-agent'], screenWidth);
+    const area = await resolveAreaFromIp(clientIp);
 
     const visit = await Visit.create({
       visitorId,
       sessionId,
       path: path || '/',
       referrer: referrer || '',
-      device,
+      device: deviceCategory,
       browser,
-      ipHash
+      ipHash,
+      area,
+      deviceCategory,
+      deviceModel,
+      deviceVendor
     });
 
     return res.status(200).json({

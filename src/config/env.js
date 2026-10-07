@@ -258,6 +258,11 @@ const config = Object.freeze({
     get notificationEmail() {
       return str('ADMIN_NOTIFICATION_EMAIL');
     },
+    /** Where the rich, icon-led "New Lead" alert is delivered on every
+     *  submission. Falls back to the SMTP user when unset. */
+    get leadNotificationEmail() {
+      return str('LEAD_NOTIFICATION_EMAIL') || str('SMTP_USER');
+    },
     get configured() {
       return Boolean(str('SMTP_HOST') && str('SMTP_USER') && str('SMTP_PASS'));
     }

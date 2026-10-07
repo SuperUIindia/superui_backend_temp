@@ -31,6 +31,22 @@ const visitSchema = new mongoose.Schema(
     ipHash: {
       type: String,
       required: true
+    },
+    area: {
+      type: String,
+      default: 'Unknown'
+    },
+    deviceCategory: {
+      type: String,
+      default: 'Desktop'
+    },
+    deviceModel: {
+      type: String,
+      default: ''
+    },
+    deviceVendor: {
+      type: String,
+      default: ''
     }
   },
   {
