@@ -141,7 +141,7 @@ async function startServer() {
   }
 
   const server = app.listen(PORT, () => {
-    console.log(`${config.brandName || 'AKHILTHADAKA'} API Server listening on port ${PORT}`);
+    console.log(`${config.brandName || 'SuperUI'} API Server listening on port ${PORT}`);
     console.log('Resolved runtime configuration:', describe());
   });
 

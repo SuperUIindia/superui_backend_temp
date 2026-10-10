@@ -4,6 +4,9 @@
   "description": "SuperUI Services API — Express 5 + MongoDB backend for lead generation, telemetry and admin analytics",
   "private": true,
   "type": "commonjs",
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
     "dev": "nodemon src/server.js",
     "start": "node src/server.js",

@@ -123,10 +123,24 @@ const CLIENT_URL = requiredUrl(
   'Public origin of the frontend, e.g. the Vite dev server in development and the deployed site in production.'
 );
 
+/**
+ * Normalises a single CORS origin entry: strips trailing slashes and whitespace
+ * so "https://www.superui.in/" matches the browser's "https://www.superui.in"
+ * Origin header exactly. A bare "*" is preserved as a wildcard.
+ */
+function normalizeOriginEntry(raw) {
+  const trimmed = String(raw || '').trim();
+  if (!trimmed) return '';
+  if (trimmed === '*') return '*';
+  return trimmed.replace(/\/+$/, '');
+}
+
 // Extra browser origins allowed to call the API. CLIENT_URL is always allowed.
 // Entries may be exact origins ("https://staging.example.com") or a wildcard
-// suffix ("*.vercel.app").
-const CORS_ORIGINS = [...new Set([CLIENT_URL, ...list('CORS_ORIGINS')])];
+// suffix ("*.vercel.app"). Trailing slashes are stripped so a stored value like
+// "https://www.superui.in/" still matches the browser's Origin header, which
+// never carries a trailing slash.
+const CORS_ORIGINS = [...new Set([CLIENT_URL, ...list('CORS_ORIGINS').map(normalizeOriginEntry)])];
 
 const config = Object.freeze({
   envFile: ENV_FILE,
@@ -163,14 +177,20 @@ const config = Object.freeze({
     return bool('CORS_ALLOW_ANY', false);
   },
 
-  /** Express `trust proxy` setting, needed for correct client IPs behind Render. */
+  /** Express `trust proxy` setting, needed for correct client IPs behind Render.
+   *
+   * Accepts "1" (trust exactly one proxy hop — the safe default for a single
+   * reverse proxy like Render), "true" (trust any proxy — only for known-safe
+   * multi-hop setups), "false" (never trust), or an integer. Defaults to 1 in
+   * production and false in development so the rate limiter does not warn.
+   */
   get trustProxy() {
-    const raw = str('TRUST_PROXY');
+    const raw = str('TRUST_PROXY').toLowerCase();
     if (!raw) return IS_PRODUCTION ? 1 : false;
     if (raw === 'true') return true;
     if (raw === 'false') return false;
     const asNumber = Number(raw);
-    return Number.isFinite(asNumber) ? asNumber : raw;
+    return Number.isFinite(asNumber) && asNumber > 0 ? Math.floor(asNumber) : raw;
   },
 
   get mongoUri() {
@@ -228,8 +248,8 @@ const config = Object.freeze({
 
   /** Lowercase brand slug used for generated filenames such as the CSV export. */
   get brandSlug() {
-    const raw = this.brandName || 'akhilthadaka';
-    return raw.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'akhilthadaka';
+    const raw = this.brandName || 'superui';
+    return raw.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'superui';
   },
 
   dnsServers: [...DNS_SERVERS],
@@ -288,8 +308,20 @@ const config = Object.freeze({
 });
 
 /**
+ * Normalises a single CORS origin entry: strips trailing slashes and whitespace
+ * so "https://www.superui.in/" matches the browser's "https://www.superui.in"
+ * Origin header exactly. A bare "*" is preserved as a wildcard.
+ */
+function normalizeOriginEntry(raw) {
+  const trimmed = String(raw || '').trim();
+  if (!trimmed) return '';
+  if (trimmed === '*') return '*';
+  return trimmed.replace(/\/+$/, '');
+}
+
+/**
  * Origin allow-list matcher. Exact origins match directly; entries written as
- * "*.example.com" match any subdomain of example.com.
+ "*.example.com" match any subdomain of example.com.
  */
 function isOriginAllowed(origin) {
   if (!origin) return true; // curl, server-to-server and native clients send no Origin

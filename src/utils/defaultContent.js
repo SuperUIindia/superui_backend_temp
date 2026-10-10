@@ -362,7 +362,7 @@ const DEFAULT_HERO = {
   headline: 'We build fast, secure websites that grow your business.',
   headlineHighlightFrom: 4,
   subtext:
-    'From high-converting web apps and performant dashboards to custom automations—AKHILTHADAKA delivers production-ready engineering designed for measurable business growth.',
+    'From high-converting web apps and performant dashboards to custom automations—SuperUI delivers production-ready engineering designed for measurable business growth.',
   primaryCtaText: 'Start a Project',
   secondaryCtaText: 'View Services',
   trustPoints: ['Production-ready code', 'Secure by default', 'Fast 24h turnaround']
@@ -372,7 +372,7 @@ const DEFAULT_HERO = {
  * Navbar: brand, links and CTA labels. Every link is an in-page anchor.
  */
 const DEFAULT_NAVBAR = {
-  brandName: 'AKHILTHADAKA',
+  brandName: 'SuperUI',
   brandHighlight: '',
   logoUrl: '/superui_logo.png',
   homeHref: '#top',
@@ -380,7 +380,7 @@ const DEFAULT_NAVBAR = {
     { label: 'Home', href: '#top' },
     { label: 'Services', href: '#services' },
     { label: 'How it Works', href: '#how-it-works' },
-    { label: 'Why AKHILTHADAKA', href: '#why-us' },
+    { label: 'Why SuperUI', href: '#why-us' },
     { label: 'Contact', href: '#contact' }
   ],
   ctaLabel: 'Start a Project',
@@ -523,7 +523,7 @@ const DEFAULT_CONTACT = {
   points: [
     { label: 'Direct Email', value: 'hello.superui@gmail.com', href: 'mailto:hello.superui@gmail.com' },
     { label: 'Response SLA', value: 'Within 24 business hours' },
-    { label: 'Location', value: 'Bengaluru, India (Serving Global Clients)' }
+    { label: 'Location', value: 'Warangal, Telangana, India (Serving Global Clients)' }
   ],
   guarantees: [
     'Free architecture & technical consultation',
@@ -555,7 +555,7 @@ const DEFAULT_CTA_BAND = {
  * so `servicesLimit` controls how many categories are listed.
  */
 const DEFAULT_FOOTER = {
-  brandName: 'AKHILTHADAKA',
+  brandName: 'SuperUI',
   brandHighlight: '',
   logoUrl: '/superui_logo.png',
   tagline:
@@ -566,16 +566,16 @@ const DEFAULT_FOOTER = {
   companyLinks: [
     { label: 'Home', href: '#top' },
     { label: 'How it Works', href: '#how-it-works' },
-    { label: 'Why AKHILTHADAKA', href: '#why-us' },
+    { label: 'Why SuperUI', href: '#why-us' },
     { label: 'Start Inquiry', href: '#contact' }
   ],
   contactGroupTitle: 'Contact',
   contactItems: [
     { label: 'hello.superui@gmail.com', href: 'mailto:hello.superui@gmail.com' },
     { label: 'Response in under 24 hours' },
-    { label: 'Bengaluru, India (Global Remote)' }
+    { label: 'Warangal, Telangana, India (Global Remote)' }
   ],
-  copyrightText: 'AKHILTHADAKA. All rights reserved.',
+  copyrightText: 'SuperUI. All rights reserved.',
   privacyNote:
     'Privacy Note: We respect your privacy. Visitor metrics are anonymized with SHA-256 and never shared.',
   backToTopLabel: 'Back to top'
@@ -620,7 +620,7 @@ const DEFAULT_CONTACT_FORM = {
     'We have received your requirements and we will contact you soon. Our team usually replies within 24 business hours.',
   successFasterReply: 'Want a faster reply?',
   successDmCta: 'Message me on Instagram',
-  successFollowCta: 'Follow AKHILTHADAKA on Instagram',
+  successFollowCta: 'Follow SuperUI on Instagram',
   successSubmitAnother: 'Submit Another Request',
   successClose: 'Continue',
   errorFallbackEmail: 'hello.superui@gmail.com'
@@ -635,22 +635,22 @@ const DEFAULT_CONTACT_FORM = {
  * frontend/src/lib/seo.js applies whichever is newer at runtime.
  */
 const DEFAULT_SEO = {
-  title: 'AKHILTHADAKA — Web Development, UI/UX Design & Custom Software Studio',
+  title: 'SuperUI — Web Development, UI/UX Design & Custom Software Studio',
   description:
-    'AKHILTHADAKA is a full-stack web development and UI/UX design studio in Bengaluru, India. We build fast, secure, SEO-optimised websites, e-commerce stores and custom web applications. Get a fixed-price proposal within 24 hours.',
+    'SuperUI is a full-stack web development and UI/UX design studio in Warangal, Telangana, India. We build fast, secure, SEO-optimised websites, e-commerce stores and custom web applications. Get a fixed-price proposal within 24 hours.',
   keywords:
-    'web development company Bengaluru, custom web application development, UI UX design services India, ecommerce website development, React and Next.js developers, website maintenance and SEO services, AKHILTHADAKA, SuperUI',
-  author: 'AKHILTHADAKA',
+    'web development company Warangal, UI UX design services India, custom web application development, ecommerce website development, React Next.js developers India, website maintenance SEO services, admin dashboard development, SuperUI, SuperUI Warangal',
+  author: 'SuperUI',
   robots: 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1',
   ogType: 'website',
   siteUrl: 'https://superui.in/',
-  ogSiteName: 'AKHILTHADAKA',
+  ogSiteName: 'SuperUI',
   ogLocale: 'en_IN',
-  ogTitle: 'AKHILTHADAKA — Web Development, UI/UX Design & Custom Software Studio',
+  ogTitle: 'SuperUI — Web Development, UI/UX Design & Custom Software Studio',
   ogDescription:
-    'A full-stack engineering and design studio in Bengaluru delivering high-speed web apps, e-commerce stores, custom software and conversion-optimised websites.',
+    'A full-stack engineering and design studio in Warangal, Telangana delivering high-speed web apps, e-commerce stores, custom software and conversion-optimised websites.',
   ogImage: 'https://superui.in/superui_logo.png',
-  ogImageAlt: 'AKHILTHADAKA logo',
+  ogImageAlt: 'SuperUI logo',
   twitterCard: 'summary_large_image'
 };
 

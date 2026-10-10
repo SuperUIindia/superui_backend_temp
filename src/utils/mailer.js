@@ -2,7 +2,7 @@ const nodemailer = require('nodemailer');
 const { config } = require('../config/env');
 
 /** Brand name from .env (BRAND_NAME), so emails never hard-code it. */
-const BRAND = config.brandName || 'AKHILTHADAKA';
+const BRAND = config.brandName || 'SuperUI';
 
 /**
  * Creates and configures Nodemailer transporter using secure environment variables

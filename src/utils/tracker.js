@@ -2,7 +2,7 @@ const crypto = require('crypto');
 const { UAParser } = require('ua-parser-js');
 const { config } = require('../config/env');
 
-const GEO_API = 'http://ip-api.com/json';
+const GEO_API = 'https://ip-api.com/json';
 
 /**
  * Hashes client IP with SHA-256 and secret salt to protect privacy.
