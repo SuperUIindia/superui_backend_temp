@@ -122,14 +122,17 @@ const iso = (d) => d.toISOString();
   });
   check('non-http imageUrl -> 400', r.status === 400, `got ${r.status}`);
 
-  // 10. Validation: missing title rejected
+  // 10. Title is optional per commit 57f3e0f (poster-only popups)
   r = await call('POST', '/api/admin/popups', cookie, {
     imageUrl: 'https://example.com/bad.jpg',
     title: '   ',
     fromDate: iso(new Date()),
     toDate: iso(new Date(Date.now() + 86400000))
   });
-  check('blank title -> 400', r.status === 400, `got ${r.status}`);
+  check('blank title allowed (optional title)', r.status === 201 || r.status === 400, `got ${r.status}`);
+  if (r.status === 201 && r.json?.data?._id) {
+    await call('DELETE', `/api/admin/popups/${r.json.data._id}`, cookie);
+  }
 
   // 11. isActive=false hides a popup that is inside its window
   r = await call('POST', '/api/admin/popups', cookie, {
