@@ -11,6 +11,7 @@
     "dev": "nodemon src/server.js",
     "start": "node src/server.js",
     "seed": "node src/scripts/seedAdmin.js",
+    "seed:admin": "node src/scripts/seedAdmin.js",
     "seed:services": "node scripts/syncServicesToDb.js",
     "seed:sections": "node scripts/syncSectionsToDb.js",
     "migrate:atlas": "node scripts/migrateToAtlas.js",

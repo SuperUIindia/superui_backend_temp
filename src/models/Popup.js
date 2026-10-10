@@ -14,7 +14,14 @@ const popupSchema = new mongoose.Schema(
       type: String,
       required: [true, 'Poster image URL is required'],
       trim: true,
-      maxlength: 500
+      maxlength: 500,
+      validate: {
+        validator: function (v) {
+          if (!v) return false;
+          return /^https?:\/\//i.test(v) || /^\//.test(v);
+        },
+        message: 'Poster image URL must begin with https:// or /'
+      }
     },
 
     // Header / body / footer copy. The header is optional so an offer can be a
@@ -50,7 +57,14 @@ const popupSchema = new mongoose.Schema(
       type: String,
       default: '',
       trim: true,
-      maxlength: 500
+      maxlength: 500,
+      validate: {
+        validator: function (v) {
+          if (!v) return true; // empty allowed, opens contact form
+          return /^(https?:\/\/|mailto:|tel:|\/)/i.test(v);
+        },
+        message: 'CTA URL must be a valid http(s) link, relative path (/), mailto:, or tel: URL'
+      }
     },
 
     // Availability window (inclusive). Expires automatically after toDate.

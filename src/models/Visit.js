@@ -5,48 +5,59 @@ const visitSchema = new mongoose.Schema(
     visitorId: {
       type: String,
       required: true,
-      trim: true
+      trim: true,
+      maxlength: 128
     },
     sessionId: {
       type: String,
       required: true,
-      trim: true
+      trim: true,
+      maxlength: 128
     },
     path: {
       type: String,
-      default: '/'
+      default: '/',
+      maxlength: 500
     },
     referrer: {
       type: String,
-      default: ''
+      default: '',
+      maxlength: 1000
     },
     device: {
       type: String,
-      default: 'Desktop'
+      default: 'Desktop',
+      maxlength: 50
     },
     browser: {
       type: String,
-      default: 'Unknown'
+      default: 'Unknown',
+      maxlength: 100
     },
     ipHash: {
       type: String,
-      required: true
+      required: true,
+      maxlength: 64
     },
     area: {
       type: String,
-      default: 'Unknown'
+      default: 'Unknown',
+      maxlength: 150
     },
     deviceCategory: {
       type: String,
-      default: 'Desktop'
+      default: 'Desktop',
+      maxlength: 50
     },
     deviceModel: {
       type: String,
-      default: ''
+      default: '',
+      maxlength: 100
     },
     deviceVendor: {
       type: String,
-      default: ''
+      default: '',
+      maxlength: 100
     }
   },
   {
@@ -56,8 +67,9 @@ const visitSchema = new mongoose.Schema(
 
 visitSchema.index({ createdAt: -1, visitorId: 1 });
 visitSchema.index({ sessionId: 1 });
+// TTL index: automatically expire visitor records after 90 days to prevent unbounded collection growth
+visitSchema.index({ createdAt: 1 }, { expireAfterSeconds: 90 * 24 * 60 * 60 });
 
 const Visit = mongoose.model('Visit', visitSchema);
 
 module.exports = Visit;
-

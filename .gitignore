@@ -81,6 +81,10 @@ Thumbs.db
 Desktop.ini
 $RECYCLE.BIN/
 
+# --- Documentation ----------------------------------------------------------
+# Markdown files are kept in the outer docs/ folder, never in this repo.
+*.md
+
 # --- Misc ------------------------------------------------------------------
 build-info.txt
 npm-debug.log*

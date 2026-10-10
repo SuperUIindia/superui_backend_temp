@@ -1,12 +1,13 @@
 const crypto = require('crypto');
+const net = require('net');
 const { UAParser } = require('ua-parser-js');
 const { config } = require('../config/env');
 
-const GEO_API = 'https://ip-api.com/json';
+// ip-api.com free tier does not support HTTPS (HTTP only on free tier)
+const GEO_API = 'http://ip-api.com/json';
 
 /**
- * Hashes client IP with SHA-256 and secret salt to protect privacy.
- * The salt comes from backend/.env (IP_HASH_SALT) with no hard-coded fallback.
+ * Hashes client IP with SHA-256 and secret salt to protect visitor privacy.
  */
 function hashIp(ip) {
   const salt = config.ipHashSalt;
@@ -15,24 +16,48 @@ function hashIp(ip) {
 }
 
 /**
- * Resolves a geographic area from an IP using a free geolocation API.
- * Returns "Unknown" on any failure (timeout, error, blocked).
+ * Checks if an IP is loopback or private RFC 1918 / RFC 4193
+ */
+function isLocalOrPrivateIp(ip) {
+  if (!ip) return true;
+  if (ip === '::1' || ip === '127.0.0.1') return true;
+  if (ip.startsWith('10.') || ip.startsWith('192.168.') || ip.startsWith('172.16.') || ip.startsWith('fc00:') || ip.startsWith('fe80:')) {
+    return true;
+  }
+  return false;
+}
+
+/**
+ * Resolves a geographic area from an IP using geolocation lookup.
+ * Returns "Unknown" on any failure or invalid IP.
  */
 async function resolveAreaFromIp(ip) {
-  if (!ip || ip === '::1' || ip === '127.0.0.1' || ip.startsWith('192.168.') || ip.startsWith('10.')) {
+  const cleanIp = String(ip || '').trim();
+
+  // Validate that the string is actually an IPv4 or IPv6 address
+  if (!cleanIp || net.isIP(cleanIp) === 0) {
+    return 'Unknown';
+  }
+
+  if (isLocalOrPrivateIp(cleanIp)) {
     return 'Localhost';
   }
+
   try {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 2000);
-    const res = await fetch(`${GEO_API}/${ip}?fields=status,city,regionName,countryName`, {
+    const timeout = setTimeout(() => controller.abort(), 2500);
+
+    // ip-api.com free tier fields: status, city, regionName, country (note: 'country', not 'countryName')
+    const res = await fetch(`${GEO_API}/${encodeURIComponent(cleanIp)}?fields=status,city,regionName,country`, {
       signal: controller.signal
     });
     clearTimeout(timeout);
+
     if (!res.ok) return 'Unknown';
     const data = await res.json();
     if (data.status !== 'success') return 'Unknown';
-    const parts = [data.city, data.regionName, data.countryName].filter(Boolean);
+
+    const parts = [data.city, data.regionName, data.country].filter(Boolean);
     return parts.length > 0 ? parts.join(', ') : 'Unknown';
   } catch {
     return 'Unknown';
@@ -86,5 +111,4 @@ function parseUserAgent(userAgentString, screenWidth) {
   };
 }
 
-module.exports = { hashIp, parseUserAgent, resolveAreaFromIp };
-
+module.exports = { hashIp, parseUserAgent, resolveAreaFromIp, isLocalOrPrivateIp };

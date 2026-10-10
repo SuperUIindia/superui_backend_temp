@@ -1,5 +1,6 @@
 const nodemailer = require('nodemailer');
 const { config } = require('../config/env');
+const { escapeHtml } = require('./escapeHtml');
 
 /** Brand name from .env (BRAND_NAME), so emails never hard-code it. */
 const BRAND = config.brandName || 'SuperUI';
@@ -30,7 +31,8 @@ function createTransporter() {
 }
 
 /**
- * Generates branded, responsive HTML template for client confirmation email
+ * Generates branded, responsive HTML template for client confirmation email.
+ * Every user-supplied field is strictly HTML-escaped to prevent email injection / phishing.
  */
 function generateClientEmailHtml(lead, siteUrl) {
   const brandOrange = '#FF5E00';
@@ -40,13 +42,21 @@ function generateClientEmailHtml(lead, siteUrl) {
   const bgLight = '#FAFAFA';
   const borderLight = '#EDEDED';
 
+  const safeName = escapeHtml(lead.name || 'there');
+  const safeLeadId = escapeHtml(lead.leadId);
+  const safePhone = escapeHtml(lead.phone);
+  const safeInstagram = escapeHtml(lead.instagramId);
+  const safePurpose = escapeHtml(lead.purpose);
+  const safeDescription = escapeHtml(lead.description);
+  const safeSiteUrl = escapeHtml(siteUrl);
+
   return `
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Your Project Inquiry Received – ${BRAND}</title>
+  <title>Your Project Inquiry Received – ${escapeHtml(BRAND)}</title>
   <style>
     body {
       margin: 0;
@@ -130,25 +140,6 @@ function generateClientEmailHtml(lead, siteUrl) {
       border-bottom: 1px solid ${borderLight};
       padding-bottom: 8px;
     }
-    .detail-row {
-      display: flex;
-      justify-content: space-between;
-      padding: 6px 0;
-      font-size: 14px;
-      border-bottom: 1px dashed #E4E4E7;
-    }
-    .detail-row:last-child {
-      border-bottom: none;
-    }
-    .detail-label {
-      color: ${textMuted};
-      font-weight: 500;
-    }
-    .detail-val {
-      color: ${textDark};
-      font-weight: 600;
-      text-align: right;
-    }
     .description-box {
       margin-top: 14px;
       padding: 14px;
@@ -204,48 +195,48 @@ function generateClientEmailHtml(lead, siteUrl) {
     </div>
 
     <div class="main-body">
-      <p class="greeting">Hello ${lead.name || 'there'},</p>
+      <p class="greeting">Hello ${safeName},</p>
       <p class="intro-text">
-        Thank you for submitting your project requirement with <strong>${BRAND}</strong>. We have received your inquiry and our engineering team is currently reviewing your technical specifications.
+        Thank you for submitting your project requirement with <strong>${escapeHtml(BRAND)}</strong>. We have received your inquiry and our engineering team is currently reviewing your technical specifications.
       </p>
 
       <div class="timeline-banner">
-        ⚡ <strong>Next Step:</strong> The ${BRAND} team will shortly reach out to you within 24 hours with an architecture breakdown and tailored proposal.
+        ⚡ <strong>Next Step:</strong> The ${escapeHtml(BRAND)} team will shortly reach out to you within 24 hours with an architecture breakdown and tailored proposal.
       </div>
 
       <div class="lead-card">
-        <div class="lead-card-title">Inquiry Summary (${lead.leadId})</div>
+        <div class="lead-card-title">Inquiry Summary (${safeLeadId})</div>
         <table width="100%" cellpadding="6" cellspacing="0" style="font-size: 14px;">
           <tr>
             <td style="color: ${textMuted}; font-weight: 500;">Reference ID:</td>
-            <td align="right" style="color: ${brandOrange}; font-weight: 700; font-family: monospace;">${lead.leadId}</td>
+            <td align="right" style="color: ${brandOrange}; font-weight: 700; font-family: monospace;">${safeLeadId}</td>
           </tr>
           <tr>
             <td style="color: ${textMuted}; font-weight: 500;">Phone:</td>
-            <td align="right" style="color: ${textDark}; font-weight: 600;">${lead.phone}</td>
+            <td align="right" style="color: ${textDark}; font-weight: 600;">${safePhone}</td>
           </tr>
           ${
             lead.instagramId
               ? `<tr>
             <td style="color: ${textMuted}; font-weight: 500;">Instagram Handle:</td>
-            <td align="right" style="color: ${brandViolet}; font-weight: 600;">${lead.instagramId}</td>
+            <td align="right" style="color: ${brandViolet}; font-weight: 600;">${safeInstagram}</td>
           </tr>`
               : ''
           }
           <tr>
             <td style="color: ${textMuted}; font-weight: 500;">Purpose:</td>
-            <td align="right" style="color: ${textDark}; font-weight: 600;">${lead.purpose}</td>
+            <td align="right" style="color: ${textDark}; font-weight: 600;">${safePurpose}</td>
           </tr>
         </table>
 
         <div style="margin-top: 14px;">
           <div style="font-size: 12px; font-weight: 600; color: ${textMuted}; margin-bottom: 6px;">Your Reason / Note:</div>
-          <div class="description-box">${lead.description}</div>
+          <div class="description-box">${safeDescription}</div>
         </div>
       </div>
 
       <div class="cta-container">
-        <a href="${siteUrl}" class="cta-btn">Visit ${BRAND}</a>
+        <a href="${safeSiteUrl}" class="cta-btn">Visit ${escapeHtml(BRAND)}</a>
       </div>
 
       <p style="font-size: 13px; color: ${textMuted}; text-align: center; margin-top: 20px;">
@@ -254,9 +245,9 @@ function generateClientEmailHtml(lead, siteUrl) {
     </div>
 
     <div class="footer">
-      <p style="margin: 0 0 6px 0;"><strong>${BRAND} Digital Engineering Studio</strong></p>
+      <p style="margin: 0 0 6px 0;"><strong>${escapeHtml(BRAND)} Digital Engineering Studio</strong></p>
       <p style="margin: 0 0 6px 0;">Bengaluru, India • Global Remote Delivery</p>
-      <p style="margin: 0; color: #A1A1AA;">© ${new Date().getFullYear()} ${BRAND}. All rights reserved.</p>
+      <p style="margin: 0; color: #71717A;">© ${new Date().getFullYear()} ${escapeHtml(BRAND)}. All rights reserved.</p>
     </div>
   </div>
 </body>
@@ -265,7 +256,8 @@ function generateClientEmailHtml(lead, siteUrl) {
 }
 
 /**
- * Generates professional admin notification email with full client details
+ * Generates professional admin notification email with full client details.
+ * Every user-supplied field is strictly HTML-escaped.
  */
 function generateAdminEmailHtml(lead, clientUrl) {
   const brandOrange = '#FF5E00';
@@ -284,9 +276,20 @@ function generateAdminEmailHtml(lead, clientUrl) {
     timeStyle: 'short'
   });
 
-  const deviceInfo = lead.device || 'Desktop';
-  const browserInfo = lead.browser || 'Unknown';
-  const areaInfo = lead.area || 'Unknown';
+  const safeName = escapeHtml(lead.name);
+  const safeEmail = escapeHtml(lead.email);
+  const safePhone = escapeHtml(lead.phone || 'N/A');
+  const safeInstagram = escapeHtml(lead.instagramId);
+  const safePurpose = escapeHtml(lead.purpose);
+  const safeDescription = escapeHtml(lead.description);
+  const safeLeadId = escapeHtml(lead.leadId);
+  const safeDevice = escapeHtml(lead.device || 'Desktop');
+  const safeBrowser = escapeHtml(lead.browser || 'Unknown');
+  const safeArea = escapeHtml(lead.area || 'Unknown');
+  const safeClientUrl = escapeHtml(clientUrl);
+
+  const mailtoEmail = encodeURIComponent(lead.email || '');
+  const telPhone = encodeURIComponent(lead.phone || '');
 
   return `
 <!DOCTYPE html>
@@ -294,7 +297,7 @@ function generateAdminEmailHtml(lead, clientUrl) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>New Lead Alert: ${lead.leadId} – ${BRAND}</title>
+  <title>New Lead Alert: ${safeLeadId} – ${escapeHtml(BRAND)}</title>
 </head>
 <body style="margin: 0; padding: 0; background-color: #F4F4F5; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: ${textDark}; line-height: 1.6;">
   <div style="max-width: 640px; margin: 30px auto; background: #FFFFFF; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.06); border: 1px solid ${borderLight};">
@@ -319,7 +322,7 @@ function generateAdminEmailHtml(lead, clientUrl) {
         <div style="width: 20px; height: 20px; background: ${greenBorder}; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px; flex-shrink: 0;">✓</div>
         <div>
           <p style="margin: 0; font-size: 14px; font-weight: 700; color: ${greenText};">New Inquiry Received</p>
-          <p style="margin: 2px 0 0 0; font-size: 12px; color: ${textMuted};">Submitted at ${submittedAt}</p>
+          <p style="margin: 2px 0 0 0; font-size: 12px; color: ${textMuted};">Submitted at ${escapeHtml(submittedAt)}</p>
         </div>
       </div>
     </div>
@@ -330,7 +333,7 @@ function generateAdminEmailHtml(lead, clientUrl) {
       <!-- Lead ID & Status -->
       <div style="text-align: center; margin-bottom: 24px;">
         <span style="display: inline-block; background: linear-gradient(135deg, ${brandOrange}, ${brandViolet}); color: white; font-size: 13px; font-weight: 700; padding: 6px 16px; border-radius: 20px; letter-spacing: 0.5px; font-family: monospace;">
-          ${lead.leadId}
+          ${safeLeadId}
         </span>
       </div>
 
@@ -343,29 +346,29 @@ function generateAdminEmailHtml(lead, clientUrl) {
         <table width="100%" cellpadding="8" cellspacing="0" style="font-size: 14px;">
           <tr>
             <td style="color: ${textMuted}; font-weight: 500; width: 40%; padding: 8px 0; border-bottom: 1px dashed #E4E4E7;">Full Name</td>
-            <td style="color: ${textDark}; font-weight: 700; text-align: right; padding: 8px 0; border-bottom: 1px dashed #E4E4E7;">${lead.name}</td>
+            <td style="color: ${textDark}; font-weight: 700; text-align: right; padding: 8px 0; border-bottom: 1px dashed #E4E4E7;">${safeName}</td>
           </tr>
           <tr>
             <td style="color: ${textMuted}; font-weight: 500; padding: 8px 0; border-bottom: 1px dashed #E4E4E7;">Email Address</td>
             <td style="color: ${brandOrange}; font-weight: 600; text-align: right; padding: 8px 0; border-bottom: 1px dashed #E4E4E7;">
-              <a href="mailto:${lead.email}" style="color: ${brandOrange}; text-decoration: none; font-weight: 600;">${lead.email}</a>
+              <a href="mailto:${mailtoEmail}" style="color: ${brandOrange}; text-decoration: none; font-weight: 600;">${safeEmail}</a>
             </td>
           </tr>
           <tr>
             <td style="color: ${textMuted}; font-weight: 500; padding: 8px 0; border-bottom: 1px dashed #E4E4E7;">Phone / WhatsApp</td>
             <td style="color: ${textDark}; font-weight: 600; text-align: right; padding: 8px 0; border-bottom: 1px dashed #E4E4E7;">
-              <a href="tel:${lead.phone}" style="color: ${textDark}; text-decoration: none; font-weight: 600;">${lead.phone || 'N/A'}</a>
+              <a href="tel:${telPhone}" style="color: ${textDark}; text-decoration: none; font-weight: 600;">${safePhone}</a>
             </td>
           </tr>
           ${lead.instagramId ? `
           <tr>
             <td style="color: ${textMuted}; font-weight: 500; padding: 8px 0; border-bottom: 1px dashed #E4E4E7;">Instagram</td>
-            <td style="color: ${brandViolet}; font-weight: 600; text-align: right; padding: 8px 0; border-bottom: 1px dashed #E4E4E7;">${lead.instagramId}</td>
+            <td style="color: ${brandViolet}; font-weight: 600; text-align: right; padding: 8px 0; border-bottom: 1px dashed #E4E4E7;">${safeInstagram}</td>
           </tr>
           ` : ''}
           <tr>
             <td style="color: ${textMuted}; font-weight: 500; padding: 8px 0;">Service Interested</td>
-            <td style="color: ${textDark}; font-weight: 700; text-align: right; padding: 8px 0;">${lead.purpose}</td>
+            <td style="color: ${textDark}; font-weight: 700; text-align: right; padding: 8px 0;">${safePurpose}</td>
           </tr>
         </table>
       </div>
@@ -376,7 +379,7 @@ function generateAdminEmailHtml(lead, clientUrl) {
           📝 Project Requirements
         </h2>
         <div style="background: #FFFFFF; border: 1px solid ${borderLight}; border-radius: 10px; padding: 16px; font-size: 14px; color: ${textDark}; white-space: pre-wrap; line-height: 1.7;">
-          ${lead.description}
+          ${safeDescription}
         </div>
       </div>
 
@@ -388,37 +391,37 @@ function generateAdminEmailHtml(lead, clientUrl) {
         <table width="100%" cellpadding="8" cellspacing="0" style="font-size: 13px;">
           <tr>
             <td style="color: ${textMuted}; font-weight: 500; width: 40%; padding: 6px 0;">Device Type</td>
-            <td style="color: ${textDark}; font-weight: 600; text-align: right; padding: 6px 0;">${deviceInfo}</td>
+            <td style="color: ${textDark}; font-weight: 600; text-align: right; padding: 6px 0;">${safeDevice}</td>
           </tr>
           <tr>
             <td style="color: ${textMuted}; font-weight: 500; padding: 6px 0;">Browser</td>
-            <td style="color: ${textDark}; font-weight: 600; text-align: right; padding: 6px 0;">${browserInfo}</td>
+            <td style="color: ${textDark}; font-weight: 600; text-align: right; padding: 6px 0;">${safeBrowser}</td>
           </tr>
           <tr>
             <td style="color: ${textMuted}; font-weight: 500; padding: 6px 0;">Location</td>
-            <td style="color: ${textDark}; font-weight: 600; text-align: right; padding: 6px 0;">${areaInfo}</td>
+            <td style="color: ${textDark}; font-weight: 600; text-align: right; padding: 6px 0;">${safeArea}</td>
           </tr>
         </table>
       </div>
 
       <!-- Action Button -->
       <div style="text-align: center; margin: 28px 0 20px 0;">
-        <a href="${clientUrl}/admin" style="display: inline-block; background: linear-gradient(135deg, ${brandOrange}, ${brandViolet}); color: #FFFFFF; text-decoration: none; font-weight: 700; font-size: 15px; padding: 14px 32px; border-radius: 12px; box-shadow: 0 4px 15px rgba(255,94,0,0.3);">
+        <a href="${safeClientUrl}/admin" style="display: inline-block; background: linear-gradient(135deg, ${brandOrange}, ${brandViolet}); color: #FFFFFF; text-decoration: none; font-weight: 700; font-size: 15px; padding: 14px 32px; border-radius: 12px; box-shadow: 0 4px 15px rgba(255,94,0,0.3);">
           Open Admin Dashboard →
         </a>
       </div>
 
       <!-- Help Text -->
       <p style="font-size: 12px; color: ${textMuted}; text-align: center; margin: 20px 0 0 0; line-height: 1.6;">
-        Reply directly to this email or contact the client at <a href="mailto:${lead.email}" style="color: ${brandOrange}; text-decoration: none; font-weight: 600;">${lead.email}</a>
+        Reply directly to this email or contact the client at <a href="mailto:${mailtoEmail}" style="color: ${brandOrange}; text-decoration: none; font-weight: 600;">${safeEmail}</a>
       </p>
     </div>
 
     <!-- Footer -->
     <div style="background: ${bgLight}; border-top: 1px solid ${borderLight}; padding: 20px 36px; text-align: center;">
-      <p style="margin: 0 0 6px 0; font-size: 13px; font-weight: 700; color: ${textDark};">${BRAND} Digital Engineering Studio</p>
+      <p style="margin: 0 0 6px 0; font-size: 13px; font-weight: 700; color: ${textDark};">${escapeHtml(BRAND)} Digital Engineering Studio</p>
       <p style="margin: 0 0 4px 0; font-size: 12px; color: ${textMuted};">Warangal, Telangana, India • Global Remote Delivery</p>
-      <p style="margin: 0; font-size: 11px; color: #A1A1AA;">© ${new Date().getFullYear()} ${BRAND}. All rights reserved.</p>
+      <p style="margin: 0; font-size: 11px; color: #71717A;">© ${new Date().getFullYear()} ${escapeHtml(BRAND)}. All rights reserved.</p>
     </div>
 
   </div>
@@ -444,12 +447,6 @@ async function sendLeadEmails(lead) {
       return { success: false, reason: 'SMTP not configured' };
     }
 
-    const submittedAt = new Date().toLocaleString('en-IN', {
-      timeZone: 'Asia/Kolkata',
-      dateStyle: 'medium',
-      timeStyle: 'short'
-    });
-
     // 1. Send Confirmation Email to Client
     const clientMailOptions = {
       from: fromAddress,
@@ -462,7 +459,7 @@ async function sendLeadEmails(lead) {
     const clientSendPromise = transporter.sendMail(clientMailOptions);
 
     // 2. Send Alert Email to Admin (if admin email is configured)
-    const adminEmail = config.smtp.notificationEmail || config.smtp.user;
+    const adminEmail = config.smtp.leadNotificationEmail || config.smtp.notificationEmail || config.smtp.user;
     let adminSendPromise = Promise.resolve();
 
     if (adminEmail) {
@@ -497,4 +494,4 @@ async function sendLeadEmails(lead) {
   }
 }
 
-module.exports = { sendLeadEmails, createTransporter };
+module.exports = { sendLeadEmails, createTransporter, generateClientEmailHtml, generateAdminEmailHtml };

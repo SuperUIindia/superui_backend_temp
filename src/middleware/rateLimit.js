@@ -12,10 +12,12 @@ const leadsLimiter = rateLimit({
   }
 });
 
-// Admin login rate limiter: 5 attempts per 15 minutes per IP
+// Admin login rate limiter: 5 failed attempts per 15 minutes per IP
+// skipSuccessfulRequests: true ensures genuine successful admin logins never exhaust the rate limit bucket
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 5,
+  skipSuccessfulRequests: true,
   standardHeaders: true,
   legacyHeaders: false,
   message: {
@@ -41,4 +43,3 @@ module.exports = {
   loginLimiter,
   trackLimiter
 };
-
