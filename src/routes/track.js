@@ -4,7 +4,7 @@ const Visit = require('../models/Visit');
 const ClickEvent = require('../models/ClickEvent');
 const validate = require('../middleware/validate');
 const { trackLimiter } = require('../middleware/rateLimit');
-const { hashIp, parseUserAgent } = require('../utils/tracker');
+const { hashIp, parseUserAgent, resolveAreaFromIp } = require('../utils/tracker');
 
 const router = express.Router();
 
