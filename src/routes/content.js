@@ -27,23 +27,24 @@ async function getOrSeedSection(key) {
 }
 
 /**
- * GET /api/content - Fetch all site sections
+ * GET /api/content - Fetch all site sections in a single fast query
  */
 router.get('/', async (req, res, next) => {
   try {
-    const allKeys = Object.keys(DEFAULT_SECTIONS);
+    res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
 
-    // Resolve every section concurrently. Awaiting them one at a time made this
-    // route cost twelve serial database round trips, and it is on the critical
-    // path of every public page load, so its latency was roughly the sum of all
-    // twelve instead of the slowest one. It also means a single slow section can
-    // no longer stall the whole response.
-    const docs = await Promise.all(allKeys.map((key) => getOrSeedSection(key)));
-
+    // Single fast batch query instead of 15 serial/concurrent round-trips
+    const docs = await SiteContent.find({}).lean();
     const sections = {};
+    const foundKeys = new Set();
+
     docs.forEach((doc) => {
-      if (!doc) return;
-      sections[doc.key] = {
+      if (!doc || !doc.key) return;
+      const k = doc.key.toLowerCase();
+      foundKeys.add(k);
+      sections[k] = {
         key: doc.key,
         title: doc.title,
         description: doc.description,
@@ -52,6 +53,30 @@ router.get('/', async (req, res, next) => {
         lastUpdatedBy: doc.lastUpdatedBy
       };
     });
+
+    // For any missing default section, populate immediately and seed asynchronously
+    const missingKeys = Object.keys(DEFAULT_SECTIONS).filter((k) => !foundKeys.has(k.toLowerCase()));
+    if (missingKeys.length > 0) {
+      for (const key of missingKeys) {
+        const def = DEFAULT_SECTIONS[key];
+        if (def) {
+          sections[key] = {
+            key,
+            title: def.title,
+            description: def.description,
+            data: def.data,
+            updatedAt: new Date()
+          };
+          SiteContent.create({
+            key,
+            title: def.title,
+            description: def.description,
+            data: def.data,
+            lastUpdatedBy: 'system-seed'
+          }).catch(() => {});
+        }
+      }
+    }
 
     return res.status(200).json({
       success: true,
@@ -67,6 +92,9 @@ router.get('/', async (req, res, next) => {
  */
 router.get('/:key', async (req, res, next) => {
   try {
+    res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
     const key = req.params.key.toLowerCase();
     const doc = await getOrSeedSection(key);
 
